@@ -1,12 +1,12 @@
 # BitsCore
 
-Paper Plugin 1.21 | Netzwerkweite Bits-Wahrung mit MySQL
+Paper Plugin 1.21 | Netzwerkweite Bits-Währung mit MySQL
 
 ---
 
-## UBERSICHT
+## ÜBERSICHT
 
-BitsCore ist eine eigenstandige Waehrungsimplementierung fuer Minecraft-Netzwerke. Alle Spielerdaten werden zentral in einer MySQL-Datenbank gespeichert und per HikariCP Connection-Pool sowie In-Memory-Cache pro Server bereitgestellt.
+BitsCore ist eine eigenständige Währungsimplementierung für Minecraft-Netzwerke. Alle Spielerdaten werden zentral in einer MySQL-Datenbank gespeichert und per HikariCP Connection-Pool sowie In-Memory-Cache pro Server bereitgestellt.
 
 Author: BlockException_
 
@@ -15,13 +15,13 @@ Author: BlockException_
 ## FEATURES
 
 - Zentrale MySQL-Datenbank mit Transaktionsprotokoll
-- HikariCP Connection-Pooling mit konfigurierbarer Pool-Groesse
+- HikariCP Connection-Pooling mit konfigurierbarer Pool-Größe
 - In-Memory Cache pro Serverinstanz (ConcurrentHashMap)
 - Asynchrone Lese- und Schreiboperationen
 - Atomare SQL-Operationen verhindern Race Conditions
 - Auto-Save aller Cachedaten alle 5 Minuten
 - PlaceholderAPI Integration (optional)
-- Offline-Spieler-Unterstuetzung bei Abfragen
+- Offline-Spieler-Unterstützung bei Abfragen
 - Top-10 Leaderboard
 
 ---
@@ -62,7 +62,7 @@ pool:
 |---|---|
 | `/bits balance` | Eigenen Kontostand anzeigen |
 | `/bits balance <Spieler>` | Kontostand eines Spielers anzeigen |
-| `/bits give <Spieler> <Betrag>` | Bits hinzufuegen |
+| `/bits give <Spieler> <Betrag>` | Bits hinzufügen |
 | `/bits take <Spieler> <Betrag>` | Bits entfernen |
 | `/bits set <Spieler> <Betrag>` | Kontostand festlegen |
 | `/bits top` | Top 10 Leaderboard anzeigen |
@@ -110,7 +110,7 @@ public void checkBalance(UUID uuid) {
 }
 ```
 
-### Bits Hinzufugen
+### Bits Hinzufügen
 
 ```java
 import de.bitscore.api.BitsCoreAPI;
@@ -162,7 +162,7 @@ softdepend: [BitsCore]
 
 ## PLACEHOLDERAPI
 
-Verfuegbare Platzhalter:
+Verfügbare Platzhalter:
 
 | Platzhalter | Ausgabe | Beispiel |
 |---|---|---|
@@ -199,7 +199,7 @@ Tabelle `bits_transactions`:
 | `amount` | INT | Betrag (negativ = Abzug) |
 | `reason` | VARCHAR(64) | Transaktionsgrund |
 | `server` | VARCHAR(32) | Servername |
-| `timestamp` | TIMESTAMP | Ausfuehrungszeitpunkt |
+| `timestamp` | TIMESTAMP | Ausführungszeitpunkt |
 
 ---
 
@@ -219,5 +219,5 @@ Ausgabe: `target/BitsCore-1.0.0.jar`
 - Paper API 1.21
 - HikariCP 5.1.0 (shaded nach `de.bitscore.libs.hikari`)
 - PlaceholderAPI 2.11.6 (optional)
-- CompletableFuture fuer asynchrone Operationen
-- ConcurrentHashMap fuer Thread-Safe Cache
+- CompletableFuture für asynchrone Operationen
+- ConcurrentHashMap für Thread-Safe Cache
