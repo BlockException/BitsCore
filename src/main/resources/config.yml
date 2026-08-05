@@ -1,0 +1,9 @@
+database:
+  host: "127.0.0.1"
+  port: 3306
+  name: "XX"
+  user: "XX"
+  password: "XX"
+pool:
+  minimumIdle: 2
+  maximumPoolSize: 10

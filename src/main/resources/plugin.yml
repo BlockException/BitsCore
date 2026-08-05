@@ -1,0 +1,14 @@
+name: BitsCore
+version: 1.0.0
+author: BlockException_
+main: de.bitscore.BitsCorePlugin
+api-version: '1.21'
+softdepend: [PlaceholderAPI]
+commands:
+  bits:
+    description: Manage Bits currency
+    usage: /bits <subcommand>
+permissions:
+  bits.core.admin:
+    description: Allows managing Bits currency
+    default: op
