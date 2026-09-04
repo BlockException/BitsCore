@@ -4,19 +4,18 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DatabaseManager {
 
     private final HikariDataSource dataSource;
-    private final Logger logger;
 
-    public DatabaseManager(FileConfiguration config, Logger logger) {
-        this.logger = logger;
+    public DatabaseManager(FileConfiguration config) {
         HikariConfig hikariConfig = new HikariConfig();
 
         String host = config.getString("database.host", "127.0.0.1");
@@ -32,7 +31,11 @@ public class DatabaseManager {
         hikariConfig.setMinimumIdle(config.getInt("pool.minimumIdle", 2));
         hikariConfig.setMaximumPoolSize(config.getInt("pool.maximumPoolSize", 10));
 
-        this.dataSource = new HikariDataSource(hikariConfig);
+        try {
+            this.dataSource = new HikariDataSource(hikariConfig);
+        } catch (RuntimeException e) {
+            throw buildInitializationException(e, host, port, database, user);
+        }
 
         createTables();
     }
@@ -61,8 +64,44 @@ public class DatabaseManager {
             ps1.execute();
             ps2.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not create database tables", e);
+            throw new IllegalStateException("Database connected but table initialization failed. Check schema permissions for user.", e);
         }
+    }
+
+    private IllegalStateException buildInitializationException(RuntimeException cause, String host, int port, String database, String user) {
+        Throwable rootCause = getRootCause(cause);
+        String target = user + "@" + host + ":" + port + "/" + database;
+
+        if (rootCause instanceof ConnectException || rootCause instanceof SocketTimeoutException || rootCause instanceof UnknownHostException) {
+            return new IllegalStateException(
+                    "MySQL host unreachable for '" + target + "'. Check host/port, firewall, and whether MySQL is running and reachable from this server.",
+                    cause
+            );
+        }
+
+        if (rootCause instanceof SQLException sqlException && "08S01".equals(sqlException.getSQLState())) {
+            return new IllegalStateException(
+                    "MySQL host unreachable for '" + target + "'. Check host/port, firewall, and whether MySQL is running and reachable from this server.",
+                    cause
+            );
+        }
+
+        if (rootCause instanceof SQLException sqlException && "28000".equals(sqlException.getSQLState())) {
+            return new IllegalStateException(
+                    "MySQL access denied for '" + target + "'. Verify username/password and allow this server host in MySQL grants (e.g. user@'%' or user@'<server-ip>').",
+                    cause
+            );
+        }
+
+        return new IllegalStateException("Could not initialize MySQL connection pool for '" + target + "'.", cause);
+    }
+
+    private Throwable getRootCause(Throwable throwable) {
+        Throwable current = throwable;
+        while (current.getCause() != null && current.getCause() != current) {
+            current = current.getCause();
+        }
+        return current;
     }
 
     public Connection getConnection() throws SQLException {

@@ -1,12 +1,12 @@
 # BitsCore
 
-Paper Plugin 1.21 | Netzwerkweite Bits-Währung mit MySQL
+Paper Plugin 1.21 | Bits-Währung mit lokalem Speicher oder MySQL
 
 ---
 
 ## ÜBERSICHT
 
-BitsCore ist eine eigenständige Währungsimplementierung für Minecraft-Netzwerke. Alle Spielerdaten werden zentral in einer MySQL-Datenbank gespeichert und per HikariCP Connection-Pool sowie In-Memory-Cache pro Server bereitgestellt.
+BitsCore ist eine eigenständige Währungsimplementierung für Minecraft-Netzwerke. Spielerdaten können lokal in einer Datei oder zentral in einer MySQL-Datenbank gespeichert werden.
 
 Author: BlockException_
 
@@ -14,7 +14,8 @@ Author: BlockException_
 
 ## FEATURES
 
-- Zentrale MySQL-Datenbank mit Transaktionsprotokoll
+- Lokaler Dateispeicher (Standard)
+- Optionale MySQL-Datenbank mit Transaktionsprotokoll
 - HikariCP Connection-Pooling mit konfigurierbarer Pool-Größe
 - In-Memory Cache pro Serverinstanz (ConcurrentHashMap)
 - Asynchrone Lese- und Schreiboperationen
@@ -30,10 +31,15 @@ Author: BlockException_
 
 1. Kompilierte JAR aus `target/` in den `plugins/`-Ordner verschieben
 2. Server starten
-3. In `plugins/BitsCore/config.yml` MySQL-Zugangsdaten eintragen
+3. In `plugins/BitsCore/config.yml` Speichermodus konfigurieren
 4. Server neu starten
 
-Die Tabellen `player_bits` und `bits_transactions` werden automatisch erstellt.
+Standardmäßig ist die Datenbank deaktiviert (`disable-database: true`) und die Daten werden lokal in `plugins/BitsCore/local-bits.yml` gespeichert.
+
+Bei `disable-database: false` werden die Tabellen `player_bits` und `bits_transactions` automatisch erstellt.
+Wenn MySQL dabei nicht erreichbar ist, startet BitsCore automatisch im lokalen Fallback-Modus.
+
+Wenn beim Start `MySQL access denied` erscheint, sind meist die Zugangsdaten oder MySQL-Host-Freigaben falsch. Der Datenbanknutzer muss vom Server-Host aus zugreifen dürfen (z. B. `user@'%'` oder `user@'<server-ip>'` mit passenden Rechten auf die BitsCore-Datenbank).
 
 ---
 
@@ -42,6 +48,8 @@ Die Tabellen `player_bits` und `bits_transactions` werden automatisch erstellt.
 `config.yml`:
 
 ```yaml
+disable-database: true
+
 database:
   host: "127.0.0.1"
   port: 3306
@@ -53,6 +61,9 @@ pool:
   minimumIdle: 2
   maximumPoolSize: 10
 ```
+
+- `disable-database: true` = lokale Speicherung in Datei
+- `disable-database: false` = MySQL aktiv
 
 ---
 
