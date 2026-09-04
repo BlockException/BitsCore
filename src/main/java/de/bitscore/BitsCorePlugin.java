@@ -32,7 +32,7 @@ public class BitsCorePlugin extends JavaPlugin {
         } else {
             try {
                 this.databaseManager = new DatabaseManager(getConfig());
-            } catch (IllegalStateException e) {
+            } catch (RuntimeException e) {
                 getLogger().log(Level.WARNING, "MySQL is enabled but unavailable: " + e.getMessage());
                 getLogger().warning("Falling back to local file storage (plugins/BitsCore/local-bits.yml).");
                 repository = BitsRepository.forLocal(getDataFolder(), getLogger(), getServer().getName());
